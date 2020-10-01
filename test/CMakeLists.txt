@@ -11,12 +11,12 @@ IF (POLICY CMP0074)
 ENDIF ()
 
 OPTION(MQTT_TEST_1 "Build test part1" ON)
-OPTION(MQTT_TEST_2 "Build test part2" ON)
-OPTION(MQTT_TEST_3 "Build test part3" ON)
-OPTION(MQTT_TEST_4 "Build test part4" ON)
-OPTION(MQTT_TEST_5 "Build test part5" ON)
-OPTION(MQTT_TEST_6 "Build test part6" ON)
-OPTION(MQTT_TEST_7 "Build test part7" ON)
+OPTION(MQTT_TEST_2 "Build test part2" OFF)
+OPTION(MQTT_TEST_3 "Build test part3" OFF)
+OPTION(MQTT_TEST_4 "Build test part4" OFF)
+OPTION(MQTT_TEST_5 "Build test part5" OFF)
+OPTION(MQTT_TEST_6 "Build test part6" OFF)
+OPTION(MQTT_TEST_7 "Build test part7" OFF)
 
 IF (MQTT_TEST_1)
     LIST (APPEND check_PROGRAMS
@@ -89,6 +89,10 @@ ENDIF ()
 
 FOREACH (source_file ${check_PROGRAMS})
     GET_FILENAME_COMPONENT (source_file_we ${source_file} NAME_WE)
+
+    # target_compile_options(${source_file_we} PUBLIC -Werror -g -Wall -Wextra -Wno-ignored-qualifiers -Wconversion)
+    set(BOOST_ASIO_NO_DEPRECATED)
+    
     ADD_EXECUTABLE (${source_file_we} ${source_file})
     TARGET_COMPILE_DEFINITIONS (${source_file_we} PUBLIC $<IF:$<BOOL:${MQTT_USE_STATIC_BOOST}>,,BOOST_TEST_DYN_LINK>)
     TARGET_LINK_LIBRARIES (
@@ -103,7 +107,7 @@ FOREACH (source_file ${check_PROGRAMS})
     IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         IF (MQTT_CODECOV)
             SET_PROPERTY (TARGET ${source_file_we}
-                          APPEND_STRING PROPERTY COMPILE_FLAGS " -O0 -g --coverage -fno-inline")
+                          APPEND_STRING PROPERTY COMPILE_FLAGS " -O0 -g --coverage -fno-inline -fno-omit-frame-pointer -Werror -g -Wall -Wextra -Wno-ignored-qualifiers -Wconversion -DBOOST_ASIO_NO_DEPRECATED")
             SET_PROPERTY (TARGET ${source_file_we}
                           APPEND_STRING PROPERTY LINK_FLAGS " --coverage")
         ENDIF ()
