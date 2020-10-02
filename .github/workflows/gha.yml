@@ -30,9 +30,10 @@ jobs:
         brew install boost openssl gnutls
 
         mkdir -p /usr/local/include/boost-asio-gnutls
-        git clone https://github.com/paullouisageneau/boost-asio-gnutls.git
-        sudo cp -R boost-asio-gnutls/include/. /usr/local/include/boost-asio-gnutls/
-        rm -rf boost-asio-gnutls
+        git clone --depth 1 https://github.com/paullouisageneau/boost-asio-gnutls.git --single-branch /usr/local/include/boost-asio-gnutls
+
+        mkdir -p /usr/local/include/boost-beast-websocket-gnutls
+        git clone --depth 1 https://github.com/shantanu1singh/boost-beast-websockets-gnutls --branch boost-1.73.0 --single-branch /usr/local/include/boost-beast-websocket-gnutls
     - name: Configure
       env:
         OPENSSL_ROOT_DIR: /usr/local/opt/openssl
@@ -65,9 +66,11 @@ jobs:
         sudo apt-get install boost1.67
         sudo apt-get install libgnutls28-dev
 
-        git clone https://github.com/paullouisageneau/boost-asio-gnutls.git
-        sudo cp -R boost-asio-gnutls/include/. /usr/local/include/boost-asio-gnutls/
-        rm -rf boost-asio-gnutls
+        mkdir -p /usr/local/include/boost-asio-gnutls
+        git clone --depth 1 https://github.com/paullouisageneau/boost-asio-gnutls.git --single-branch /usr/local/include/boost-asio-gnutls
+
+        mkdir -p /usr/local/include/boost-beast-websocket-gnutls
+        git clone --depth 1 https://github.com/shantanu1singh/boost-beast-websockets-gnutls --branch boost-1.73.0 --single-branch /usr/local/include/boost-beast-websocket-gnutls
     - name: Configure
       run: |
         [ ${{ matrix.pattern }} == 0 ] && FLAGS="-DCMAKE_CXX_COMPILER=clang++                -DMQTT_TEST_1=ON  -DMQTT_TEST_2=ON  -DMQTT_TEST_3=OFF -DMQTT_TEST_4=OFF -DMQTT_TEST_5=OFF -DMQTT_TEST_6=OFF -DMQTT_TEST_7=OFF -DMQTT_BUILD_EXAMPLES=OFF -DMQTT_USE_WS=ON  -DMQTT_USE_STR_CHECK=ON  -DMQTT_USE_LOG=ON  -DMQTT_STD_ANY=OFF -DMQTT_STD_OPTIONAL=OFF -DMQTT_STD_VARIANT=OFF -DMQTT_STD_STRING_VIEW=OFF -DMQTT_STD_SHARED_PTR_ARRAY=OFF -DMQTT_USE_TLS=OFF"

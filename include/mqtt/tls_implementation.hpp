@@ -22,6 +22,14 @@
 #include <boost/asio/gnutls.hpp>
 #endif // MQTT_USE_TLS == MQTT_TLS_OPENSSL
 
+#if defined(MQTT_USE_WS)
+#if MQTT_USE_TLS == MQTT_TLS_OPENSSL
+#include <boost/beast/websocket/ssl.hpp>
+#elif MQTT_USE_TLS == MQTT_TLS_GNUTLS
+#include <boost/beast/websocket/gnutls/ssl.hpp>
+#endif // MQTT_USE_TLS == MQTT_TLS_OPENSSL
+#endif
+
 #if MQTT_USE_TLS == MQTT_TLS_OPENSSL
 namespace tls = boost::asio::ssl;
 #elif MQTT_USE_TLS == MQTT_TLS_GNUTLS
