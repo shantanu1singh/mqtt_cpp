@@ -8,36 +8,75 @@
 #include <iomanip>
 #include <map>
 
+#include <cstring>
+#include <fstream>
+#include <openssl/err.h>
+#include <regex>
+#include <string>
+
 #include <mqtt_client_cpp.hpp>
+#include <boost/asio/ssl.hpp>
+
+std::string ReadPemDataFromFile(const std::string &filePath)
+{
+    std::string contents;
+    try
+    {
+        std::ifstream ifs(filePath);
+        contents.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
+        ifs.close();
+    }
+    catch (const std::exception &ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
+    
+    return contents;
+}
 
 int main(int argc, char** argv) {
-    if (argc != 4) {
-        std::cout << argv[0] << " host port cacert_file" << std::endl;
-        return -1;
-    }
+    // if (argc != 4) {
+    //     std::cout << argv[0] << " host port cacert_file" << std::endl;
+    //     return -1;
+    // }
 
     boost::asio::io_context ioc;
 
-    std::string host = argv[1];
-    auto port = argv[2];
-    std::string cacert = argv[3];
+    // std::string host = argv[1];
+    // auto port = argv[2];
+    // std::string cacert = argv[3];
 
     std::uint16_t pid_sub1;
     std::uint16_t pid_sub2;
 
     int count = 0;
     // Create TLS client
-    auto c = MQTT_NS::make_tls_sync_client(ioc, host, port);
+    auto c = MQTT_NS::make_tls_sync_client(ioc, "ci07-mqtt.mcvp-test01.com", "8883");
     using packet_id_t = typename std::remove_reference_t<decltype(*c)>::packet_id_t;
 
     auto disconnect = [&] {
         if (++count == 5) c->disconnect();
     };
 
+    std::string cert = "";
+
+    std::string privateKey = "";
+
     // Setup client
-    c->set_client_id("cid1");
+    // c->set_client_id("cid1");
+    // c->set_clean_session(true);
+// c->get_ssl_context().load_verify_file(cacert);
+    
+    c->set_client_id("shsi237");
     c->set_clean_session(true);
-    c->get_ssl_context().load_verify_file(cacert);
+    c->get_ssl_context().set_default_verify_paths();
+
+    c->get_ssl_context().use_certificate(
+                as::buffer(ReadPemDataFromFile("/home/shantanu/trustzone/shsi237/certs/edgelet_device.cert.pem")),
+                as::ssl::context_base::file_format::pem);
+    c->get_ssl_context().use_private_key(
+                as::buffer(ReadPemDataFromFile("/home/shantanu/trustzone/shsi237/cert_keys/edgelet_device.key.pem")),
+                as::ssl::context_base::file_format::pem);
 
 #if OPENSSL_VERSION_NUMBER >= 0x10101000L
 
@@ -135,7 +174,9 @@ int main(int argc, char** argv) {
         });
 
     // Connect
-    c->connect();
+    boost::system::error_code ec;
+    c->connect(ec);
+    std::cout << ec.category().name() << " : " << ec.value() << " : " << ec.message() << std::endl;
 
     ioc.run();
 }

@@ -1,21 +1,21 @@
-LIST (APPEND exec_PROGRAMS
-    no_tls_client.cpp
-    no_tls_async_client.cpp
-    no_tls_server.cpp
-    no_tls_both.cpp
-    v5_no_tls_client.cpp
-    v5_no_tls_server.cpp
-    v5_no_tls_both.cpp
-    v5_no_tls_prop.cpp
-    redirect.cpp
-    broker.cpp
-)
+# LIST (APPEND exec_PROGRAMS
+#     no_tls_client.cpp
+#     no_tls_async_client.cpp
+#     no_tls_server.cpp
+#     no_tls_both.cpp
+#     v5_no_tls_client.cpp
+#     v5_no_tls_server.cpp
+#     v5_no_tls_both.cpp
+#     v5_no_tls_prop.cpp
+#     redirect.cpp
+#     broker.cpp
+# )
 
 IF (MQTT_USE_TLS)
     LIST (APPEND exec_PROGRAMS
         tls_client.cpp
-        tls_server.cpp
-        tls_both.cpp
+        # tls_server.cpp
+        # tls_both.cpp
     )
 ENDIF ()
 
