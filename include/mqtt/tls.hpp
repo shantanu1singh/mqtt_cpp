@@ -23,6 +23,19 @@
 
 namespace MQTT_NS {
 namespace tls = MQTT_TLS_NS;
+
+inline constexpr bool is_tls_short_read(int error_val)
+{
+#if defined(MQTT_TLS_ERROR_COMPARISON)
+    return MQTT_TLS_ERROR_COMPARISON(error_val);
+#elif defined(SSL_R_SHORT_READ)
+    return ERR_GET_REASON(error_val) == SSL_R_SHORT_READ;
+#else  // defined(SSL_R_SHORT_READ)
+    return ERR_GET_REASON(error_val) == tls::error::stream_truncated;
+#endif // defined(MQTT_TLS_ERROR_COMPARISON)
+    return false;
+}
+
 } // namespace MQTT_NS
 
 
